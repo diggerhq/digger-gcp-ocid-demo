@@ -21,7 +21,7 @@ jobs:
       pull-requests: read
 
     env:
-      GCP_SERVICE_ACCOUNT: 939437574540-compute@developer.gserviceaccount.com
+      GCP_SERVICE_ACCOUNT: 939437574540-compute@developer.iam.gserviceaccount.com
       GOOGLE_STORAGE_BUCKET: digger-lock2
       
     steps:

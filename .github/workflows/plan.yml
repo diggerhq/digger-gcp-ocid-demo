@@ -15,6 +15,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: read
+
+    env:
+      SERVICE_ACCOUNT: 939437574540-compute@developer.gserviceaccount.com
+      GOOGLE_STORAGE_BUCKET: digger-lock2
+      
     steps:
       - uses: actions/checkout@v3
 
@@ -31,13 +40,18 @@ jobs:
       - id: 'auth'
         uses: 'google-github-actions/auth@v1'
         with:
-          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+          token_format: access_token
+          workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
+          service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
 
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
 
       - name: 'Use gcloud CLI'
-        run: 'gcloud info'
+        run: |
+          gcloud info
+          gsutil ls gs://${{ env.GOOGLE_STORAGE_BUCKET }}
+
 
       - name: digger
         uses: diggerhq/digger@main

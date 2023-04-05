@@ -15,12 +15,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      id-token: write
-      pull-requests: read
-      issues: write
-
     env:
       GCP_SERVICE_ACCOUNT: github-actions@totemic-beaker-312109.iam.gserviceaccount.com
       GOOGLE_STORAGE_BUCKET: digger-lock2

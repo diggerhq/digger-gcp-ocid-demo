@@ -1,8 +1,6 @@
 name: CI
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
     types: [ closed, opened, synchronize, reopened ]
@@ -32,40 +30,15 @@ jobs:
 
     env:
       GCP_SERVICE_ACCOUNT: github-actions@totemic-beaker-312109.iam.gserviceaccount.com
-      GOOGLE_STORAGE_BUCKET: digger-lock2
       
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Checkout Pull Request
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          PR_URL="${{ github.event.issue.pull_request.url }}"
-          PR_NUM=${PR_URL##*/}
-          echo "Checking out from PR #$PR_NUM based on URL: $PR_URL"
-          hub pr checkout $PR_NUM
-        if: github.event_name == 'issue_comment'
-        
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v1'
+      - name: digger run
+        uses: diggerhq/digger@v0.1.12
         with:
-          token_format: access_token
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
-          audience: google-wif
-
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v1'
-
-      - name: 'Use gcloud CLI'
-        run: |
-          gcloud info
-          gsutil ls gs://${{ env.GOOGLE_STORAGE_BUCKET }}
-
-
-      - name: digger
-        uses: diggerhq/digger@main
+          setup-google-cloud: true
+          google-workload-identity-provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          google-service-account: ${{ env.GCP_SERVICE_ACCOUNT }}
+          google-workload-identity-provider-audience: google-wif
         env:
           LOCK_PROVIDER: gcp
           GITHUB_CONTEXT: ${{ toJson(github) }}
